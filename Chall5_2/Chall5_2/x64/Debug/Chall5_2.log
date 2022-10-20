@@ -1,0 +1,3 @@
+﻿  Chall5_2.cpp
+C:\Users\duyhu\source\repos\Chall5_2\Chall5_2\Chall5_2.cpp(9,1): warning C4326: return type of 'main' should be 'int' instead of 'void'
+C:\Users\duyhu\source\repos\Chall5_2\Chall5_2\Chall5_2.cpp(61,74): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
