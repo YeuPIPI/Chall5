@@ -1,0 +1,92 @@
+#include <iostream>
+#include <string.h>
+#include <termios.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
+using namespace std;
+
+void SetStdinEcho(bool enable = true){
+    struct termios tty;
+    tcgetattr(STDIN_FILENO , &tty);
+    if(!enable){
+        tty.c_lflag &= -ECHO;
+    } 
+    else{
+        tty.c_lflag |= ECHO;
+
+    }
+    (void) tcsetattr(STDIN_FILENO, TCSANOW , &tty);
+}
+
+
+
+int SearchForUserName(const char *username){
+    int found = 0;
+    while(true){
+        errno = 0;
+        passwd* entry = getpwent();
+        if(!entry){
+            if(errno){
+                std::cerr << "ERROR";
+                return EXIT_FAILURE;
+            }
+            break;
+        }
+        if(!strcmp(username,entry -> pw_name)){
+            found = 1;
+            break;
+        }
+        endpwent();
+    }
+    return found;
+}
+
+
+int main(){
+    char username[30] ;
+    char password[30];
+    char password2[30];
+
+    cout << "Nhap ten user :";
+    cin.get(username,30);
+    int found = SearchForUserName(username);
+    
+
+    if(!found){
+        cout << "\n User" << username << "Khong ton tai";
+
+    }
+    else{
+        cout << "Nhap password moi : " ;
+        SetStdinEcho(false);
+        cin.get();
+        cin.get(password,30);
+        SetStdinEcho(true);
+        cout << "Nhap lai password moi :";
+        SetStdinEcho(false);
+        cin.get();
+        cin.get(password2,30);
+        SetStdinEcho(true);
+        cout << "\n";
+        if(!strcmp(password , password2)){
+            char command[100] = "sudo usermod -p $(openssl passwd - 1";
+            strcat(command , password);
+            strcat(command , ")");
+            strcat(command , username);
+
+
+            int result = system(command);
+            if(!result){
+                cout << "\n thanh cong\n";
+                
+            }
+            else{
+                cout << "\n That bai \n" ;
+            }
+        }
+        else{
+            cout << "\n Thai bai do khong trung \n" ;
+        }
+    }
+}
